@@ -116,6 +116,7 @@ function levelEdit.mousepressed(x,y,button)
 		end
 	elseif button == "r" then
 		tiles[xPos][yPos] = 0
+		atoms[xPos][yPos] = 0
 	elseif button == "m" then
 		tiles[xPos][yPos] = playerNo
 	end
@@ -150,9 +151,24 @@ function levelEdit.keypressed(key,unicode)
 			atom = "H"
 			atomEntry = false
 		end
-		if key == "c" then
+		if key == "u" then
 			bl = false
 			atom = "Cu"
+			atomEntry = false
+		end
+		if key == "c" then
+			bl = false
+			atom = "C"
+			atomEntry = false
+		end
+		if key == "n" then
+			bl = false
+			atom = "N"
+			atomEntry = false
+		end
+		if key == "s" then
+			bl = false
+			atom = "S"
 			atomEntry = false
 		end
 	else

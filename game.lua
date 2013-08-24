@@ -10,6 +10,7 @@ oldX = 0
 oldY = 0
 xPos = 1
 yPos = 1
+powers = {}
 
 function game.update(dt)
 	if complete then
@@ -167,6 +168,10 @@ function playerStuff(dt)
 				plY = plY + (200*dt)
 			elseif oldY < plY then
 				plY = plY - (200*dt)
+			end
+			if atoms[xPos][yPos] ~= 0 then
+				table.insert(powers,atoms[xPos][yPos])
+				atoms[xPos][yPos] = 0
 			end
 		end
 	else

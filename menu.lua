@@ -1,7 +1,7 @@
 menu = {}
 
 function menu.draw()
-	love.graphics.print("press l to enter level editor, g to play",200,200)
+	love.graphics.print("press l to enter level editor or g to play",200,200)
 end
 
 function menu.update()

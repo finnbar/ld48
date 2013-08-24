@@ -24,6 +24,8 @@ fan = love.graphics.newImage("tempBlockFan.png")
 copper = love.graphics.newImage("tempBlockCopper.png")
 door = love.graphics.newImage("tempBlockDoor.png")
 player = player1
+font = love.graphics.newFont("5x5_pixel.ttf",18)
+love.graphics.setFont(font)
 
 tiles = {}
 atoms = {}
