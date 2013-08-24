@@ -53,6 +53,44 @@ function levelEdit.draw()
 						end
 					end
 				end
+				if checkIt2(tiles[x][y]) then  --not PLAYER!!!
+					if x<w then
+						if checkIt2(tiles[x+1][y]) then
+							love.graphics.draw(tileRef[10],((x-1)*box)+hBox,(y-1)*box)
+						end
+					end
+					if x>1 then
+						if checkIt2(tiles[x-1][y]) then
+							love.graphics.draw(tileRef[10],((x-1)*box)-hBox,(y-1)*box)
+						end
+					end
+					if y<h then
+						if checkIt2(tiles[x][y+1]) then
+							love.graphics.draw(tileRef[10],(x-1)*box,((y-1)*box)+hBox)
+						end
+					end
+					if y>1 then
+						if checkIt2(tiles[x][y-1]) then
+							love.graphics.draw(tileRef[10],(x-1)*box,((y-1)*box)-hBox)
+						end
+					end
+					if x<w and y<h  then
+						local good = true
+						local things = {tiles[x][y+1],tiles[x+1][y],tiles[x+1],tiles[y+1]}
+						for th=1,#things,1 do
+							if things[th] == 0 or things[th] == playerNo then
+								good = false
+							end
+						end
+						if good then
+							--print("good")
+							love.graphics.draw(tileRef[10],((x-1)*box)+hBox,((y-1)*box)+hBox)
+						end
+					end
+				end
+			end
+			if atoms[x][y] ~= 0 then
+				love.graphics.print(atoms[x][y],((x-1)*50)+20,((y-1)*50)+20)
 			end
 		end
 	end
@@ -71,7 +109,11 @@ function levelEdit.mousepressed(x,y,button)
 	local xPos = math.ceil(x/box)
 	local yPos = math.ceil(y/box)
 	if button == "l" then
-		tiles[xPos][yPos] = blockToPlace
+		if bl then
+			tiles[xPos][yPos] = blockToPlace
+		else
+			atoms[xPos][yPos] = atom
+		end
 	elseif button == "r" then
 		tiles[xPos][yPos] = 0
 	elseif button == "m" then
@@ -103,28 +145,48 @@ function levelEdit.keypressed(key,unicode)
 		print(love.filesystem.write("levels.lua",levelData,all))
 	end
 	if atomEntry then
-		--once I've dealt with all the obstacles, I shall add atoms here. add "atomEntry = false" after each definition
+		if key == "h" then
+			bl = false
+			atom = "H"
+			atomEntry = false
+		end
+		if key == "c" then
+			bl = false
+			atom = "Cu"
+			atomEntry = false
+		end
 	else
 		if key == "l" then
+			bl = true
 			tiles = level
 		end
 		if key == "x" then
+			bl = true
 			gamestate = menu
 		end
 		if key == "1" then
+			bl = true
 			blockToPlace = 2
 		end
 		if key == "2" then
+			bl = true
 			blockToPlace = 6
 		end
 		if key == "3" then
+			bl = true
 			blockToPlace = 7
 		end
 		if key == "4" then
+			bl = true
 			blockToPlace = 8
 		end
 		if key == "5" then
+			bl = true
 			blockToPlace = 9
+		end
+		if key == "6" then
+			bl = true
+			blockToPlace = 11
 		end
 		if key == "0" then
 			atomEntry = true
@@ -134,4 +196,8 @@ end
 
 function checkIt(val) --vals will be added to this
 	if val == 2 then return true else return false end
+end
+
+function checkIt2(val)
+	if val == 9 then return true else return false end
 end

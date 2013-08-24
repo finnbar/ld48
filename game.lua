@@ -1,11 +1,15 @@
 game = {}
 complete = true
 count = 0
-plX = 0
-plY = 0
+plX = 200
+plY = 200
 lHold = 0
 rHold = 0
 uHold = 0
+oldX = 0
+oldY = 0
+xPos = 1
+yPos = 1
 
 function game.update(dt)
 	if complete then
@@ -17,6 +21,8 @@ function game.update(dt)
 					plX = (x-1)*box
 					plY = (y-1)*box
 					tiles[x][y] = 0
+					oldX = x
+					oldY = y
 					break
 				end
 			end
@@ -27,6 +33,7 @@ function game.update(dt)
 end
 
 function game.draw()
+	love.graphics.rectangle("line",(xPos-1)*50,(yPos-1)*50,50,50)
 	love.graphics.draw(player,plX,plY+12)
 	for x=1,w,1 do
 		for y=1,h,1 do
@@ -79,6 +86,44 @@ function game.draw()
 						end
 					end
 				end
+				if checkIt2(tiles[x][y]) then  --not PLAYER!!!
+					if x<w then
+						if checkIt2(tiles[x+1][y]) then
+							love.graphics.draw(tileRef[10],((x-1)*box)+hBox,(y-1)*box)
+						end
+					end
+					if x>1 then
+						if checkIt2(tiles[x-1][y]) then
+							love.graphics.draw(tileRef[10],((x-1)*box)-hBox,(y-1)*box)
+						end
+					end
+					if y<h then
+						if checkIt2(tiles[x][y+1]) then
+							love.graphics.draw(tileRef[10],(x-1)*box,((y-1)*box)+hBox)
+						end
+					end
+					if y>1 then
+						if checkIt2(tiles[x][y-1]) then
+							love.graphics.draw(tileRef[10],(x-1)*box,((y-1)*box)-hBox)
+						end
+					end
+					if x<w and y<h  then
+						local good = true
+						local things = {tiles[x][y+1],tiles[x+1][y],tiles[x+1],tiles[y+1]}
+						for th=1,#things,1 do
+							if things[th] == 0 or things[th] == playerNo then
+								good = false
+							end
+						end
+						if good then
+							--print("good")
+							love.graphics.draw(tileRef[10],((x-1)*box)+hBox,((y-1)*box)+hBox)
+						end
+					end
+				end
+			end
+			if atoms[x][y] ~= 0 then
+				love.graphics.print(atoms[x][y],((x-1)*50)+20,((y-1)*50)+20)
 			end
 		end
 	end
@@ -86,49 +131,50 @@ end
 
 function playerStuff(dt)
 	if up then
-		plY = plY - (400*dt)
-		uHold = 10
-	else
-		if uHold > 0 then
-			plY = plY - (uHold*60*dt)
-			uHold = uHold - 1
-		end
-	end
-	if down then
+		plY = plY - (200*dt)
+		player = player1
+	elseif down then
 		plY = plY + (200*dt)
+		player = player3
 	end
 	if left then
 		plX = plX - (200*dt)
-		lHold = 20
-	else
-		if lHold > 0 then
-			plX = plX - (lHold*15*dt)
-			lHold = lHold - 1
-		end
-	end
-	if right then
+		player = player4
+	elseif right then
 		plX = plX + (200*dt)
-		rHold = 20
+		player = player2
+	end
+	--plY = plY + (100*dt)
+	if plY>0 and plX>0 then
+		xPos = math.ceil((plX-36.5)/50)+1
+		yPos = math.ceil((plY-25)/50)+1
+		print(xPos,yPos)
+		if tiles[xPos][yPos] ~= 0 then
+			--[[
+			if left then
+				plX = plX + (200*dt)
+			elseif right then
+				plX = plX - (200*dt)
+			end
+			plY = plY - (200*dt)
+			]]--
+			if oldX > plX then
+				plX = plX + (200*dt)
+			elseif oldX < plX then
+				plX = plX - (200*dt)
+			end
+			if oldY > plY then
+				plY = plY + (200*dt)
+			elseif oldY < plY then
+				plY = plY - (200*dt)
+			end
+		end
 	else
-		if rHold > 0 then
-			plX = plX + (rHold*15*dt)
-			rHold = rHold - 1
-		end
+		if plX<10 then plX=10 end
+		if plY<10 then plY=10 end
 	end
-	plY = plY + (200*dt)
-	local compX = math.ceil(plX/50) + 1
-	local compY = math.ceil(plY/50) + 1
-	--print(compX,compY)
-	if tiles[compX][compY] ~= 0 then
-		--[[    UNCOMMENTING THIS CAUSES PROBLEMS W/ MOVEMENT
-		if right then
-			plX = plX - (200*dt)
-		elseif left then
-			plX = plX + (200*dt)
-		end
-		]]--
-		plY = plY - (200*dt)
-	end
+	oldX = plX
+	oldY = plY
 end
 
 function checkIt(val)
