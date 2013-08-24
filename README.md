@@ -1,4 +1,6 @@
 ld48
 ====
 
-LUDUM DARE 48, IF YOU ARE ALLERGIC TO ATOMS PLEASE IGNORE THIS REPO
+A swift warning: there will be lots of atoms, so be careful!
+Logic is key!
+The end.
