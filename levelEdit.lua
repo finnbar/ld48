@@ -6,25 +6,25 @@ function levelEdit.draw()
 		for y=1,h,1 do
 			if tiles[x][y] ~= 0 then
 				love.graphics.draw(tileRef[tiles[x][y]],(x-1)*box,(y-1)*box)
-				if tiles[x][y] == 2 then  --not PLAYER!!!
+				if checkIt(tiles[x][y]) then  --not PLAYER!!!
 					if x<w then
-						if tiles[x+1][y] == 2 then
-							love.graphics.draw(tileRef[tiles[x][y]+1],((x-1)*box)+hBox,(y-1)*box)
+						if checkIt(tiles[x+1][y]) then
+							love.graphics.draw(tileRef[3],((x-1)*box)+hBox,(y-1)*box)
 						end
 					end
 					if x>1 then
-						if tiles[x-1][y] == 2 then
-							love.graphics.draw(tileRef[tiles[x][y]+1],((x-1)*box)-hBox,(y-1)*box)
+						if checkIt(tiles[x-1][y]) then
+							love.graphics.draw(tileRef[3],((x-1)*box)-hBox,(y-1)*box)
 						end
 					end
 					if y<h then
-						if tiles[x][y+1] == 2 then
-							love.graphics.draw(tileRef[tiles[x][y]+2],(x-1)*box,((y-1)*box)+hBox)
+						if checkIt(tiles[x][y+1]) then
+							love.graphics.draw(tileRef[4],(x-1)*box,((y-1)*box)+hBox)
 						end
 					end
 					if y>1 then
-						if tiles[x][y-1] == 2 then
-							love.graphics.draw(tileRef[tiles[x][y]+2],(x-1)*box,((y-1)*box)-hBox)
+						if checkIt(tiles[x][y-1]) then
+							love.graphics.draw(tileRef[4],(x-1)*box,((y-1)*box)-hBox)
 						end
 					end
 					if x<w and y<h  then
@@ -37,7 +37,19 @@ function levelEdit.draw()
 						end
 						if good then
 							--print("good")
-							love.graphics.draw(tileRef[tiles[x][y]+3],((x-1)*box)+hBox,((y-1)*box)+hBox)
+							love.graphics.draw(tileRef[5],((x-1)*box)+hBox,((y-1)*box)+hBox)
+						end
+					end
+				end
+				if tiles[x][y] == 7 then
+					if x<w then
+						if tiles[x+1][y] == 2 or tiles[x+1][y] == 7 then
+							love.graphics.draw(tileRef[3],((x-1)*box)+hBox,(y-1)*box)
+						end
+					end
+					if y<h then
+						if tiles[x][y+1] == 2 or tiles[x][y+1] == 7 then
+							love.graphics.draw(tileRef[4],(x-1)*box,((y-1)*box)+hBox)
 						end
 					end
 				end
@@ -91,8 +103,7 @@ function levelEdit.keypressed(key,unicode)
 		print(love.filesystem.write("levels.lua",levelData,all))
 	end
 	if atomEntry then
-		atomEntry = false
-		--once I've dealt with all the obstacles, I shall add atoms here
+		--once I've dealt with all the obstacles, I shall add atoms here. add "atomEntry = false" after each definition
 	else
 		if key == "l" then
 			tiles = level
@@ -107,7 +118,20 @@ function levelEdit.keypressed(key,unicode)
 			blockToPlace = 6
 		end
 		if key == "3" then
+			blockToPlace = 7
+		end
+		if key == "4" then
+			blockToPlace = 8
+		end
+		if key == "5" then
+			blockToPlace = 9
+		end
+		if key == "0" then
 			atomEntry = true
 		end
 	end
+end
+
+function checkIt(val) --vals will be added to this
+	if val == 2 then return true else return false end
 end
