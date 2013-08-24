@@ -8,16 +8,17 @@ h=12
 box=50
 hBox=25
 qBox=12
-playerNo=5
+playerNo=1
 
 gamestate = menu
 
 block = love.graphics.newImage("tempBlock.png")  --CHANGE THIS SOON
 side = love.graphics.newImage("tempBlockSide.png")
 player = love.graphics.newImage("player.png")  --AND THIS
+exit = love.graphics.newImage("tempBlockExit.png")
 
 tiles = {}
-tileRef = {block,side,side,side,player}  --naming order: block, sideblock (x+-1), top and bottom block (y+-1),diagnol block(x+-1,y+-1), ... , player
+tileRef = {player,block,side,side,side,exit}  --naming order: player, block, sideblock (x+-1), top and bottom block (y+-1),diagnol block(x+-1,y+-1), ...
 
 function love.load()
 	temp = love.filesystem.load("levels.lua")
@@ -31,9 +32,9 @@ function love.load()
 	for x=1,w,1 do
 		for y=1,h,1 do
 			tiles[x][y] = math.random(0,1)
+			if tiles[x][y] == 1 then tiles[x][y] = 2 end
 		end
 	end  --to here will be replaced with a level loading function
-	tiles = levels[1]
 end
 
 function love.draw()

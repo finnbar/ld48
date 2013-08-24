@@ -1,28 +1,29 @@
 levelEdit = {}
+blockToPlace = 2
 
 function levelEdit.draw()
 	for x=1,w,1 do
 		for y=1,h,1 do
 			if tiles[x][y] ~= 0 then
 				love.graphics.draw(tileRef[tiles[x][y]],(x-1)*box,(y-1)*box)
-				if tiles[x][y] ~= playerNo then  --not PLAYER!!!
+				if tiles[x][y] == 2 then  --not PLAYER!!!
 					if x<w then
-						if tiles[x+1][y] ~= 0 and tiles[x+1][y] ~= playerNo then
+						if tiles[x+1][y] == 2 then
 							love.graphics.draw(tileRef[tiles[x][y]+1],((x-1)*box)+hBox,(y-1)*box)
 						end
 					end
 					if x>1 then
-						if tiles[x-1][y] ~= 0 and tiles[x-1][y] ~= playerNo then
+						if tiles[x-1][y] == 2 then
 							love.graphics.draw(tileRef[tiles[x][y]+1],((x-1)*box)-hBox,(y-1)*box)
 						end
 					end
 					if y<h then
-						if tiles[x][y+1] ~= 0 and tiles[x][y+1] ~= playerNo then
+						if tiles[x][y+1] == 2 then
 							love.graphics.draw(tileRef[tiles[x][y]+2],(x-1)*box,((y-1)*box)+hBox)
 						end
 					end
 					if y>1 then
-						if tiles[x][y-1] ~= 0 and tiles[x][y-1] ~= playerNo then
+						if tiles[x][y-1] == 2 then
 							love.graphics.draw(tileRef[tiles[x][y]+2],(x-1)*box,((y-1)*box)-hBox)
 						end
 					end
@@ -58,7 +59,7 @@ function levelEdit.mousepressed(x,y,button)
 	local xPos = math.ceil(x/box)
 	local yPos = math.ceil(y/box)
 	if button == "l" then
-		tiles[xPos][yPos] = 1
+		tiles[xPos][yPos] = blockToPlace
 	elseif button == "r" then
 		tiles[xPos][yPos] = 0
 	elseif button == "m" then
@@ -68,7 +69,11 @@ end
 
 function levelEdit.keypressed(key,unicode)
 	if key == "s" then
-		local levelData = "level = {"
+		local file,size = love.filesystem.read("levels.lua")
+		local p,q = string.find(file,"level")
+		local levNum = string.sub(file,q+1,q+1) + 1
+		print(levNum)
+		local levelData = "level" .. levNum .. " = {"
 		for x=1,w,1 do
 			levelData = levelData .. "{"
 			for y=1,h,1 do
@@ -82,13 +87,27 @@ function levelEdit.keypressed(key,unicode)
 				levelData = levelData .. ","
 			end
 		end
-		levelData = levelData .. "}"
+		levelData = levelData .. "}		" .. file
 		print(love.filesystem.write("levels.lua",levelData,all))
 	end
-	if key == "l" then
-		tiles = level
-	end
-	if key == "x" then
-		gamestate = menu
+	if atomEntry then
+		atomEntry = false
+		--once I've dealt with all the obstacles, I shall add atoms here
+	else
+		if key == "l" then
+			tiles = level
+		end
+		if key == "x" then
+			gamestate = menu
+		end
+		if key == "1" then
+			blockToPlace = 2
+		end
+		if key == "2" then
+			blockToPlace = 6
+		end
+		if key == "3" then
+			atomEntry = true
+		end
 	end
 end
