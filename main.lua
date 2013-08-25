@@ -1,3 +1,4 @@
+io.stdout:setvbuf("no")
 require("game")
 require("levelEdit")
 require("origLevels")
@@ -24,22 +25,25 @@ fan = love.graphics.newImage("tempBlockFan.png")
 copper = love.graphics.newImage("tempBlockCopper.png")
 door = love.graphics.newImage("tempBlockDoor.png")
 player = player1
+poisonPart = love.graphics.newImage("poison.png")
+explosivePart = love.graphics.newImage("explosive.png")
+gasPart = love.graphics.newImage("gas.png")
 font = love.graphics.newFont("5x5_pixel.ttf",18)
+largeFont = love.graphics.newFont("5x5_pixel.ttf",32)
 love.graphics.setFont(font)
 
+blockToPlace = 2
+
 tiles = {}
-atoms = {}
 tileRef = {player,block,side,side,side,exit,blockade,fan,copper,copper,door}  --naming order: player, block, sideblock (x+-1), top and bottom block (y+-1),diagnol block(x+-1,y+-1), ...
 
 function love.load()
 	temp = love.filesystem.load("levels.lua")
 	temp()
-	for x=1,w,1 do  --from here...
+	for x=1,w+1,1 do  --from here...
 		table.insert(tiles,{})
-		table.insert(atoms,{})
 		for y=1,h,1 do
 			table.insert(tiles[x],0)
-			table.insert(atoms[x],0)
 		end
 	end
 	--[[
