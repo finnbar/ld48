@@ -15,6 +15,7 @@ miniPlus = 1
 timer = 10
 shooting = false
 timerDis = 0
+toSwap = 0
 powers = {}
 colourList = {}
 moleculeID = {{"C","O","gas"},{"Cu","O","conductive"},{"N","H","explosive"},{"Na","H","poison"}}
@@ -32,6 +33,7 @@ function game.update(dt)
 end
 
 function game.draw()
+	electricity()
 	timerDis = tonumber(string.format("%." .. 2 .. "f",timer))
 	timerDis = timerDis*100
 	--print(timerDis)
@@ -55,19 +57,22 @@ function game.draw()
 							love.graphics.setColor(0,255,0)
 						end
 					end
-				elseif partOf == "conductive" then
+				end
+				if partOf == "conductive" then
 					for c=1,#playerPowers,1 do
 						if playerPowers[c] == "conductive" then
 							love.graphics.setColor(255,160,100)
 						end
 					end
-				elseif partOf == "gas" then
+				end
+				if partOf == "gas" then
 					for c=1,#playerPowers,1 do
 						if playerPowers[c] == "gas" then
 							love.graphics.setColor(0,255,100)
 						end
 					end
-				elseif partOf == "explosive" then
+				end
+				if partOf == "explosive" then
 					for c=1,#playerPowers,1 do
 						if playerPowers[c] == "explosive" then
 							love.graphics.setColor(255,0,0)
@@ -229,29 +234,44 @@ function playerStuff(dt)
 		yPos = math.ceil((plY-25)/50)+1
 		--print(xPos,yPos)
 		if tiles[xPos][yPos] ~= 0 then
-			if tiles[xPos][yPos] == 6 then complete = true end
-			--[[
-			if left then
-				plX = plX + (200*dt)
-			elseif right then
-				plX = plX - (200*dt)
-			end
-			plY = plY - (200*dt)
-			]]--
-			if oldX > plX then
-				plX = plX + (200*dt)
-			elseif oldX < plX then
-				plX = plX - (200*dt)
-			end
-			if oldY > plY then
-				plY = plY + (200*dt)
-			elseif oldY < plY then
+			if tiles[xPos][yPos] ~= 12 then
+				if tiles[xPos][yPos] == 6 then complete = true end
+				for a=1,#playerPowers,1 do
+					if playerPowers[a] == "poison" then
+						if tiles[xPos][yPos] == 2 then tiles[xPos][yPos] = 0 end
+					end
+					if playerPowers[a] == "gas" then
+						if tiles[xPos][yPos] == 8 then
+							tiles[xPos][yPos] = 14
+						end
+					end
+					if playerPowers[a] == "explosive" then
+						if tiles[xPos][yPos] == 7 then tiles[xPos][yPos] = 0 end
+					end
+				end
+				--[[
+				if left then
+					plX = plX + (200*dt)
+				elseif right then
+					plX = plX - (200*dt)
+				end
 				plY = plY - (200*dt)
-			end
-			if tiles[xPos][yPos] ~= 0 then
-				if type(tiles[xPos][yPos]) == "string" then
-					table.insert(powers,tiles[xPos][yPos])
-					tiles[xPos][yPos] = 0
+				]]--
+				if oldX > plX then
+					plX = plX + (200*dt)
+				elseif oldX < plX then
+					plX = plX - (200*dt)
+				end
+				if oldY > plY then
+					plY = plY + (200*dt)
+				elseif oldY < plY then
+					plY = plY - (200*dt)
+				end
+				if tiles[xPos][yPos] ~= 0 then
+					if type(tiles[xPos][yPos]) == "string" then
+						table.insert(powers,tiles[xPos][yPos])
+						tiles[xPos][yPos] = 0
+					end
 				end
 			end
 		end
@@ -263,7 +283,7 @@ function playerStuff(dt)
 	local lengthPowers = #powers-1
 	--print(lengthPowers)
 	if lengthPowers > 0 then
-		for a=1,lengthPowers-1,1 do
+		for a=1,lengthPowers,1 do
 			--print(powers[a],a)
 			for b=1,#moleculeID,1 do
 				if powers[a] == moleculeID[b][1] then
@@ -276,13 +296,32 @@ function playerStuff(dt)
 						table.insert(playerPowers,moleculeID[b][3])
 					end
 				end
+				local test = true
+				for i=1,#playerPowers,1 do
+					if playerPowers[i] == "gas" then
+						test = false
+						break
+					end
+				end
+				if test then
+					if powers[a] == "C" then
+						if powers[a+1] == "O" then
+							table.insert(playerPowers,"gas")
+						end
+					end
+					if powers[a] == "O" then
+						if powers[a+1] == "C" then
+							table.insert(playerPowers,"gas")
+						end
+					end
+				end
 			end
 		end
 	end
 	--print(powers[#powers])
 	for x=1,#playerPowers,1 do
 		if playerPowers[x] ~= nil then
-			--print(playerPowers[x])
+			print(playerPowers[x])
 		end
 	end
 	oldX = plX
@@ -294,6 +333,67 @@ function checkIt(val)
 		return true
 	else
 		return false
+	end
+end
+
+function electricity()
+	for x=1,w,1 do
+		for y=1,h,1 do
+			conduction[x][y] = 0
+		end
+	end
+	for a=1,#playerPowers,1 do
+		if playerPowers[a] == "conductive" then
+			xPos = math.ceil((plX-36.5)/50)+1
+			yPos = math.ceil((plY-25)/50)+1
+			conduction[xPos][yPos] = 1
+		end
+	end
+	--add fan rules
+	local notDone = true
+	local count = 20
+	while notDone do
+		notDone = false
+		for x=1,w,1 do
+			for y=1,h,1 do
+				if conduction[x][y] == 1 then
+					--print(x,y)
+					for a=-1,1,1 do
+						for b=-1,1,1 do
+							local xd = x + a
+							local yd = y + b
+							--print(xd,yd)
+							if xd~=0 or yd~=0 then --don't bother with (0,0)
+								if xd>1 and xd<=w and yd>1 and yd<=h then
+									if type(tiles[xd][yd]) == "number" then
+										if tiles[xd][yd] > 7 and tiles[xd][yd] < 12 then --8,9,10,11
+											--print(xd,yd)
+											conduction[x][y] = 1
+											notDone = true
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+		for x=1,w,1 do
+			for y=1,h,1 do
+				if conduction[x][y] == 1 then
+					if tiles[x][y] == 9 then
+						tiles[x][y] = 13
+					elseif tiles[x][y] == 11 then
+						tiles[x][y] = 12
+					elseif tiles[x][y] == 8 then
+						tiles[x][y] = 14
+					end
+				end
+			end
+		end
+		count = count - 1
+		if count < 1 then notDone = false end
 	end
 end
 
@@ -312,6 +412,48 @@ function game.keypressed(key)
 	end
 	if key == "space" then
 		shooting = true
+	end
+	if key == "1" then
+		swapem(1)
+	end
+	if key == "2" then
+		swapem(2)
+	end
+	if key == "3" then
+		swapem(3)
+	end
+	if key == "4" then
+		swapem(4)
+	end
+	if key == "5" then
+		swapem(5)
+	end
+	if key == "6" then
+		swapem(6)
+	end
+	if key == "7" then
+		swapem(7)
+	end
+	if key == "8" then
+		swapem(8)
+	end
+	if key == "9" then
+		swapem(9)
+	end
+	if key == "0" then
+		swapem(10)
+	end
+end
+
+function swapem(newKey)
+	if toSwap == 0 then
+		toSwap = newKey
+	else
+		local switch = powers[toSwap]
+		if switch ~= nil then
+			powers[toSwap] = powers[newKey]
+			powers[newKey] = switch
+		end
 	end
 end
 
