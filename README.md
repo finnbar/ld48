@@ -5,6 +5,8 @@ A swift warning: there will be lots of atoms, so be careful!
 Logic is key!
 The end.
 
+Play the levels to find out how to play. There's a level editor :)
+
 See license for details!
 
 libraries and fonts used

@@ -13,6 +13,8 @@ playerNo=1   --where the player is in tileRefs
 
 gamestate = menu
 
+mainTrack = love.audio.newSource("Songthing.wav")
+
 block = love.graphics.newImage("tempBlock.png")  --CHANGE THIS SOON
 side = love.graphics.newImage("tempBlockSide.png")
 player1 = love.graphics.newImage("player.png")  --AND THIS
