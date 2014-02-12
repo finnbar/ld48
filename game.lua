@@ -119,7 +119,9 @@ function game.draw()
 							end
 						end
 					end
-					love.graphics.print(powers[a],(a*60)+40,610)
+					if powers[a] ~= nil then
+						love.graphics.print(powers[a],(a*60)+40,610)
+					end
 				end
 			end
 		end
